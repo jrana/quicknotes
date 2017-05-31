@@ -1,5 +1,4 @@
 <idea-plugin url="https://github.com/jrana/quicknotes">
-  <id>>com.jsrana.plugins.quicknotes.QuickNotes</id>
   <name>Quick Notes</name>
   <version>2.9.5</version>
   <vendor email="jsrana@gmail.com" url="https://github.com/jrana/quicknotes">Jitendra Rana</vendor>
