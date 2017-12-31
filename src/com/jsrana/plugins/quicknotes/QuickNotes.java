@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class QuickNotes
         implements ApplicationComponent, JDOMExternalizable {
-    public String enotes = "";
+    private String enotes = "";
     public int selectednoteindex = 0;
     private Element notesElement;
     public static final Key KEY_PANELID = new Key("panelid");
@@ -86,9 +86,9 @@ public class QuickNotes
                 final QuickNotesPanel quickNotesPanel = new QuickNotesPanel(notesElement);
                 final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 
-                Runnable task1 = new Runnable(){
+                Runnable task1 = new Runnable() {
                     @Override
-                    public void run(){
+                    public void run() {
                         ToolWindow toolWindow = twm.registerToolWindow("Notes", true, ToolWindowAnchor.RIGHT);
                         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
                         Content content = contentFactory.createContent(quickNotesPanel.getRootComponent(), "", false);
@@ -200,6 +200,12 @@ public class QuickNotes
             element.setAttribute("bgLineColorRed", String.valueOf(bgLineColor.getRed()));
             element.setAttribute("bgLineColorGreen", String.valueOf(bgLineColor.getGreen()));
             element.setAttribute("bgLineColorBlue", String.valueOf(bgLineColor.getBlue()));
+
+            Color lineNumberColor = QuickNotesPanel.EDITOR_COLOR_LINENUMBER;
+            element.setAttribute("lineNumberColorDefault", "Y");
+            element.setAttribute("lineNumberColorRed", String.valueOf(lineNumberColor.getRed()));
+            element.setAttribute("lineNumberColorGreen", String.valueOf(lineNumberColor.getGreen()));
+            element.setAttribute("lineNumberColorBlue", String.valueOf(lineNumberColor.getBlue()));
         }
 
         QuickNotesManager mgr = QuickNotesManager.getInstance();
@@ -289,6 +295,30 @@ public class QuickNotes
                 blue = 0;
             }
             mgr.setBackgroundLineColor(new Color(red, green, blue), false);
+        }
+
+        // set line number color
+        mgr.setLineNumberColor_default("Y".equals(element.getAttributeValue("lineNumberColorDefault")));
+        if (!mgr.isLineNumberColor_default()) {
+            int red;
+            try {
+                red = Integer.parseInt(element.getAttributeValue("lineNumberColorRed"));
+            } catch (NumberFormatException e) {
+                red = 0;
+            }
+            int green;
+            try {
+                green = Integer.parseInt(element.getAttributeValue("lineNumberColorGreen"));
+            } catch (NumberFormatException e) {
+                green = 0;
+            }
+            int blue;
+            try {
+                blue = Integer.parseInt(element.getAttributeValue("lineNumberColorBlue"));
+            } catch (NumberFormatException e) {
+                blue = 0;
+            }
+            mgr.setLineNumberColor(new Color(red, green, blue), false);
         }
 
         List notes = element.getChildren();

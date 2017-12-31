@@ -15,6 +15,10 @@
  */
 package com.jsrana.plugins.quicknotes.ui;
 
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.JBColor;
+import com.intellij.util.ui.JBUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -32,12 +36,15 @@ public class LicenseDialog
     private JButton buttonOK;
     private JTextArea textArea1;
 
-    public LicenseDialog() {
+    LicenseDialog() {
         setContentPane(contentPane);
         setTitle("License");
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
+        buttonOK.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        buttonOK.setIcon(IconLoader.getIcon("/resources/flat/check.png"));
+        buttonOK.setBackground(JBColor.background());
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onOK();
@@ -78,8 +85,8 @@ public class LicenseDialog
                 "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n" +
                 "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n" +
                 "SOFTWARE.");
-        textArea1.setMargin(new Insets(2, 2, 2, 2));
-        textArea1.setBackground(Color.WHITE);
+        textArea1.setMargin(JBUI.insets(2));
+        textArea1.setBackground(JBColor.WHITE);
     }
 
     private void onOK() {

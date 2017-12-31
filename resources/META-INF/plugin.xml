@@ -1,6 +1,6 @@
 <idea-plugin url="https://github.com/jrana/quicknotes">
   <name>Quick Notes</name>
-  <version>2.9.5</version>
+  <version>2.9.6</version>
   <vendor email="jsrana@gmail.com" url="https://github.com/jrana/quicknotes">Jitendra Rana</vendor>
 
   <description><![CDATA[
@@ -34,6 +34,16 @@
 
   <change-notes>
         <![CDATA[
+    <p><b>Version 2.9.6</b>
+    <ul>
+    <li>Search is now case insensitive</li>
+    <li>Note title is now also included in search</li>
+    <li>Search pane colors now follow the IDEA color theme</li>
+    <li>Added support for configuring line number color</li>
+    <li>Added new icons for light and dark themes</li>
+    <li>Fixed UI to be better compatible with IDEA theme</li>
+    <li>Added new button on Settings dialog to go to Bug list</li>
+    </ul>
     <p><b>Version 2.9.5</b>
     <ul>
     <li>Fix to work with upcoming IntelliJ IDEA 2017.2 (Thanks Simon Hogg for the fix)</li>
