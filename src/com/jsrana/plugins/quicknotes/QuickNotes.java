@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009 Jitendra Rana, jsrana@gmail.com
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,16 @@ package com.jsrana.plugins.quicknotes;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.project.ProjectManagerAdapter;
-import com.intellij.openapi.util.*;
+import com.intellij.openapi.project.ProjectManagerListener;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.jsrana.plugins.quicknotes.manager.QuickNotesManager;
+import com.jsrana.plugins.quicknotes.ui.QuickNotesIcon;
 import com.jsrana.plugins.quicknotes.ui.QuickNotesPanel;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -34,7 +36,6 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.xml.sax.InputSource;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +43,7 @@ import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Quick Notes is an IntelliJ IDEA Plugin that provides saving notes in IDEA itself
@@ -49,18 +51,17 @@ import java.util.List;
  * @author Jitendra Rana
  */
 public class QuickNotes
-        implements ApplicationComponent, JDOMExternalizable {
+        implements ApplicationComponent {
     private String enotes = "";
-    public int selectednoteindex = 0;
     private Element notesElement;
     public static final Key KEY_PANELID = new Key("panelid");
+    public static final String PROPERTY_FILELOCATION = "com.jsrana.plugins.quicknotes.filelocation";
 
     /**
      * Constructor
      */
     public QuickNotes() {
     }
-
 
     /**
      * Unique name of this component. If there is another component with the same name or
@@ -79,7 +80,7 @@ public class QuickNotes
      */
     public void initComponent() {
         notesElement = readSettings();
-        ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
+        ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerListener() {
             Key quicknoteskey = new Key("quicknotesid");
 
             public void projectOpened(final Project project) {
@@ -89,25 +90,15 @@ public class QuickNotes
                 Runnable task1 = new Runnable() {
                     @Override
                     public void run() {
-                        ToolWindow toolWindow = twm.registerToolWindow("Notes", true, ToolWindowAnchor.RIGHT);
+                        ToolWindow toolWindow = twm.registerToolWindow("Quick Notes", true, ToolWindowAnchor.RIGHT);
                         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
                         Content content = contentFactory.createContent(quickNotesPanel.getRootComponent(), "", false);
                         toolWindow.getContentManager().addContent(content);
-                        toolWindow.setIcon(new ImageIcon(getClass().getClassLoader().getResource("resources/quicknotes.png")));
+                        toolWindow.setIcon(QuickNotesIcon.QUICKNOTES);
                         project.putUserData(quicknoteskey, quickNotesPanel);
                     }
                 };
                 twm.invokeLater(task1);
-
-/*
-                ToolWindow toolWindow = twm.registerToolWindow( "Notes", true, ToolWindowAnchor.RIGHT );
-                ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-                Content content = contentFactory.createContent( quickNotesPanel.getRootComponent(), "", false );
-                toolWindow.getContentManager().addContent( content );
-                toolWindow.setIcon( new ImageIcon( getClass().getClassLoader().getResource( "resources/quicknotes.png" ) ) );
-                project.putUserData( quicknoteskey, quickNotesPanel );
-                project.putUserData( KEY_PANELID, quickNotesPanel.getId() );
-*/
             }
 
             public void projectClosed(final Project project) {
@@ -128,23 +119,6 @@ public class QuickNotes
      * Component should dispose system resources or perform another cleanup in this method.
      */
     public void disposeComponent() {
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public void readExternal(Element element)
-            throws InvalidDataException {
-        DefaultJDOMExternalizer.readExternal(this, element);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void writeExternal(Element element)
-            throws WriteExternalException {
-        DefaultJDOMExternalizer.writeExternal(this, element);
     }
 
     /**
@@ -211,14 +185,9 @@ public class QuickNotes
         QuickNotesManager mgr = QuickNotesManager.getInstance();
         mgr.setShowLineNumbers("Y".equals(element.getAttributeValue("showlinenumbers")));
         mgr.setWordWrap("Y".equals(element.getAttributeValue("wordwrap")));
-        try {
-            mgr.setToolBarLocation(Integer.parseInt(element.getAttributeValue("toolbarlocation")));
-        } catch (NumberFormatException e) {
-            mgr.setToolBarLocation(0);
-        }
         int fontsize = 12;
         try {
-            fontsize = Integer.parseInt(element.getAttributeValue("fontsize"));
+            fontsize = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("fontsize")));
         } catch (NumberFormatException e) {
             // ignore
         }
@@ -229,23 +198,23 @@ public class QuickNotes
         if (!mgr.isFontColor_default()) {
             int red;
             try {
-                red = Integer.parseInt(element.getAttributeValue("fontColorRed"));
+                red = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("fontColorRed")));
             } catch (NumberFormatException e) {
-                red = 0;
+                red = QuickNotesPanel.EDITOR_COLOR_FONT.getRed();
             }
             int green;
             try {
-                green = Integer.parseInt(element.getAttributeValue("fontColorGreen"));
+                green = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("fontColorGreen")));
             } catch (NumberFormatException e) {
-                green = 0;
+                green = QuickNotesPanel.EDITOR_COLOR_FONT.getGreen();
             }
             int blue;
             try {
-                blue = Integer.parseInt(element.getAttributeValue("fontColorBlue"));
+                blue = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("fontColorBlue")));
             } catch (NumberFormatException e) {
-                blue = 0;
+                blue = QuickNotesPanel.EDITOR_COLOR_FONT.getBlue();
             }
-            mgr.setFontColor(new Color(red, green, blue), false);
+            mgr.setFontColor(new JBColor(new Color(red, green, blue), new Color(red, green, blue)), false);
         }
 
         // set background color
@@ -253,23 +222,23 @@ public class QuickNotes
         if (!mgr.isBackgroundColor_default()) {
             int red;
             try {
-                red = Integer.parseInt(element.getAttributeValue("bgColorRed"));
+                red = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("bgColorRed")));
             } catch (NumberFormatException e) {
-                red = 0;
+                red = QuickNotesPanel.EDITOR_COLOR_BACKGROUND.getRed();
             }
             int green;
             try {
-                green = Integer.parseInt(element.getAttributeValue("bgColorGreen"));
+                green = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("bgColorGreen")));
             } catch (NumberFormatException e) {
-                green = 0;
+                green = QuickNotesPanel.EDITOR_COLOR_BACKGROUND.getGreen();
             }
             int blue;
             try {
-                blue = Integer.parseInt(element.getAttributeValue("bgColorBlue"));
+                blue = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("bgColorBlue")));
             } catch (NumberFormatException e) {
-                blue = 0;
+                blue = QuickNotesPanel.EDITOR_COLOR_BACKGROUND.getBlue();
             }
-            mgr.setBackgroundColor(new Color(red, green, blue), false);
+            mgr.setBackgroundColor(new JBColor(new Color(red, green, blue), new Color(red, green, blue)), false);
         }
 
         // set line properties
@@ -278,23 +247,23 @@ public class QuickNotes
         if (!mgr.isBackgroundLineColor_default()) {
             int red;
             try {
-                red = Integer.parseInt(element.getAttributeValue("bgLineColorRed"));
+                red = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("bgLineColorRed")));
             } catch (NumberFormatException e) {
-                red = 0;
+                red = QuickNotesPanel.EDITOR_COLOR_LINE.getRed();
             }
             int green;
             try {
-                green = Integer.parseInt(element.getAttributeValue("bgLineColorGreen"));
+                green = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("bgLineColorGreen")));
             } catch (NumberFormatException e) {
-                green = 0;
+                green = QuickNotesPanel.EDITOR_COLOR_LINE.getGreen();
             }
             int blue;
             try {
-                blue = Integer.parseInt(element.getAttributeValue("bgLineColorBlue"));
+                blue = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("bgLineColorBlue")));
             } catch (NumberFormatException e) {
-                blue = 0;
+                blue = QuickNotesPanel.EDITOR_COLOR_LINE.getBlue();
             }
-            mgr.setBackgroundLineColor(new Color(red, green, blue), false);
+            mgr.setBackgroundLineColor(new JBColor(new Color(red, green, blue), new Color(red, green, blue)), false);
         }
 
         // set line number color
@@ -302,23 +271,23 @@ public class QuickNotes
         if (!mgr.isLineNumberColor_default()) {
             int red;
             try {
-                red = Integer.parseInt(element.getAttributeValue("lineNumberColorRed"));
+                red = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("lineNumberColorRed")));
             } catch (NumberFormatException e) {
-                red = 0;
+                red = QuickNotesPanel.EDITOR_COLOR_LINENUMBER.getRed();
             }
             int green;
             try {
-                green = Integer.parseInt(element.getAttributeValue("lineNumberColorGreen"));
+                green = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("lineNumberColorGreen")));
             } catch (NumberFormatException e) {
-                green = 0;
+                green = QuickNotesPanel.EDITOR_COLOR_LINENUMBER.getGreen();
             }
             int blue;
             try {
-                blue = Integer.parseInt(element.getAttributeValue("lineNumberColorBlue"));
+                blue = Integer.parseInt(Objects.requireNonNull(element.getAttributeValue("lineNumberColorBlue")));
             } catch (NumberFormatException e) {
-                blue = 0;
+                blue = QuickNotesPanel.EDITOR_COLOR_LINENUMBER.getBlue();
             }
-            mgr.setLineNumberColor(new Color(red, green, blue), false);
+            mgr.setLineNumberColor(new JBColor(new Color(red, green, blue), new Color(red, green, blue)), false);
         }
 
         List notes = element.getChildren();

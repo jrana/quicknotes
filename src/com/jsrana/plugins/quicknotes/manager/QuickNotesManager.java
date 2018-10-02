@@ -15,6 +15,7 @@
  */
 package com.jsrana.plugins.quicknotes.manager;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.jsrana.plugins.quicknotes.ui.QuickNotesPanel;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -28,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.jsrana.plugins.quicknotes.QuickNotes.PROPERTY_FILELOCATION;
+
 /**
  * Quick Notes Panel
  *
@@ -37,13 +40,11 @@ public class QuickNotesManager {
     private HashMap<String, QuickNotesPanel> panelMap;
     private int index = 0;
     private static QuickNotesManager instance = new QuickNotesManager();
-    public static final String VERSION = "v2.9.6";
+    public static final String VERSION = "v3.2";
 
-    private String fileLocation_default = System.getProperty("user.home");
     private boolean showLineNumbers = true;
     private boolean wordWrap = false;
     private Font notesFont = new Font("Arial", Font.PLAIN, 12);
-    private int toolbarLocation = TOOLBARLOCATION_BOTTOM;
     private Color fontColor = QuickNotesPanel.EDITOR_COLOR_FONT;
     private boolean fontColor_default = true;
 
@@ -57,14 +58,11 @@ public class QuickNotesManager {
     private Color backgroundLineColor = QuickNotesPanel.EDITOR_COLOR_LINE;
     private boolean backgroundLineColor_default = true;
 
-    public static final int TOOLBARLOCATION_BOTTOM = 0;
-    public static final int TOOLBARLOCATION_TOP = 1;
-
     /**
      * Do not instantiate QuickNotesManager.
      */
     private QuickNotesManager() {
-        panelMap = new HashMap<String, QuickNotesPanel>();
+        panelMap = new HashMap<>();
     }
 
     /**
@@ -166,6 +164,10 @@ public class QuickNotesManager {
         }
     }
 
+    public static String getFolderPath() {
+        return PropertiesComponent.getInstance().getValue(PROPERTY_FILELOCATION, System.getProperty("user.home") + System.getProperty("file.separator") + ".ideaquicknotes");
+    }
+
     /**
      * Returns the settings file. Creates the setting folder and file if not found.
      *
@@ -173,29 +175,23 @@ public class QuickNotesManager {
      */
     public static File getSettingsFile() {
         File settingsFile = null;
-        String userHome = QuickNotesManager.getInstance().getFileLocation_default();
-        //String userHome = System.getProperty( "user.home" );
-        if (userHome != null) {
-            File home = new File(userHome);
-            File settingsDirectory = new File(home, ".ideaquicknotes");
-            try {
-                boolean DEVMODE = false;
-                if (!settingsDirectory.exists()) {
-                    if (settingsDirectory.mkdir()) {
-                        settingsFile = new File(settingsDirectory, DEVMODE ? "ideaquicknotes_dev.xml" : "ideaquicknotes.xml");
-                        if (!settingsFile.exists()) {
-                            settingsFile.createNewFile();
-                        }
-                    }
-                } else {
-                    settingsFile = new File(settingsDirectory, DEVMODE ? "ideaquicknotes_dev.xml" : "ideaquicknotes.xml");
+        File fileLocationFolder = new File(getFolderPath());
+        try {
+            if (!fileLocationFolder.exists()) {
+                if (fileLocationFolder.mkdir()) {
+                    settingsFile = new File(fileLocationFolder, "ideaquicknotes.xml");
                     if (!settingsFile.exists()) {
                         settingsFile.createNewFile();
                     }
                 }
-            } catch (IOException e) {
-                settingsFile = null;
+            } else {
+                settingsFile = new File(fileLocationFolder, "ideaquicknotes.xml");
+                if (!settingsFile.exists()) {
+                    settingsFile.createNewFile();
+                }
             }
+        } catch (IOException e) {
+            settingsFile = null;
         }
         return settingsFile;
     }
@@ -211,9 +207,7 @@ public class QuickNotesManager {
             try {
                 QuickNotesManager mgr = QuickNotesManager.getInstance();
                 element.setAttribute("showlinenumbers", mgr.isShowLineNumbers() ? "Y" : "N");
-                element.setAttribute("toolbarlocation", String.valueOf(mgr.getToolbarLocation()));
                 element.setAttribute("wordwrap", mgr.isWordWrap() ? "Y" : "N");
-                element.setAttribute("filelocation", mgr.getFileLocation_default());
 
                 Font font = mgr.getNotesFont();
                 element.setAttribute("fontname", font.getFontName());
@@ -300,20 +294,6 @@ public class QuickNotesManager {
         }
     }
 
-    public void setToolBarLocation(int location) {
-        toolbarLocation = location;
-        for (String id : panelMap.keySet()) {
-            if (id != null) {
-                QuickNotesPanel qnp = panelMap.get(id);
-                qnp.setToolbarLocation(location);
-            }
-        }
-    }
-
-    public int getToolbarLocation() {
-        return toolbarLocation;
-    }
-
     public Color getFontColor() {
         return fontColor;
     }
@@ -394,14 +374,6 @@ public class QuickNotesManager {
                                    boolean defaultColor) {
         lineNumberColor_default = defaultColor;
         this.lineNumberColor = lineNumberColor;
-    }
-
-    private String getFileLocation_default() {
-        return fileLocation_default;
-    }
-
-    public void setFileLocation_default(String fileLocation_default) {
-        this.fileLocation_default = fileLocation_default;
     }
 
     public boolean isBackgroundLineColor_default() {

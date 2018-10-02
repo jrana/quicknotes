@@ -1,9 +1,9 @@
 <idea-plugin url="https://github.com/jrana/quicknotes">
-  <name>Quick Notes</name>
-  <version>2.9.6</version>
-  <vendor email="jsrana@gmail.com" url="https://github.com/jrana/quicknotes">Jitendra Rana</vendor>
+    <name>Quick Notes</name>
+    <version>3.2</version>
+    <vendor email="jsrana@gmail.com" url="https://github.com/jrana/quicknotes">Jitendra Rana</vendor>
 
-  <description><![CDATA[
+    <description><![CDATA[
     Quick Notes is a plugin written for IntelliJ IDEA. This plugin adds the ability to manage multiple text notes
     within the IDEA itself. These could be some tips, notes, code snippets, etc that usually comes to mind while
     coding and Quick Notes provides an ideal way to save those thoughts quickly and easily.
@@ -18,149 +18,53 @@
     <li>Rename an existing note</li>
     <li>Delete an existing note</li>
     <li>Manage notes across multiple IDEA instances</li>
-    <li>Any change in one IDEA instance gets reflected across other IDEA instances</li>
-    <li>Notes are saved in user's home folder "userhome.ideaquicknotes"</li>
     <li>Show or hide line numbers</li>
-    <li>The toolbar can be placed at top or bottom location</li>
     <li>Ability to change Font of notes</li>
     <li>Ability to search notes</li>
-    <li>Ability to save notes to a file</li>
     </ul>
     <br><a href='http://docs.google.com/fileview?id=0B6GyR43t58eXNzQ1ZmUyOTktZDc5NS00ZWRkLTlmMGMtOGQ0ZGIyZjdhM2E0&hl=en' target='_blank'>Click here</a> to read/download the manual for this plugin.
     <br><br>For any bugs or suggestions, please leave a comment on the plugin page at
-    <br><a href='http://plugins.intellij.net/plugin/?id=4456' target='_blank'>http://plugins.intellij.net/plugin/?id=4456</a>
+    <br><a href='https://plugins.jetbrains.com/plugin/4456-quick-notes' target='_blank'>https://plugins.jetbrains.com/plugin/4456-quick-notes</a>
     <br><br>Quick Notes is an open source project hosted at <a href='https://github.com/jrana/quicknotes'>github</a> and you are always welcome to join this project and contribute.
     ]]></description>
 
-  <change-notes>
-        <![CDATA[
-    <p><b>Version 2.9.6</b>
+    <change-notes><![CDATA[
+    <p><b>Version 3.2</b>
     <ul>
-    <li>Search is now case insensitive</li>
-    <li>Note title is now also included in search</li>
-    <li>Search pane colors now follow the IDEA color theme</li>
-    <li>Added support for configuring line number color</li>
-    <li>Added new icons for light and dark themes</li>
-    <li>Fixed UI to be better compatible with IDEA theme</li>
-    <li>Added new button on Settings dialog to go to Bug list</li>
+    <li>Fixed layout issue in IDEA 2018.2.x and later</li>
     </ul>
-    <p><b>Version 2.9.5</b>
+    <p><b>Version 3.1</b>
     <ul>
-    <li>Fix to work with upcoming IntelliJ IDEA 2017.2 (Thanks Simon Hogg for the fix)</li>
-    <li>Added support to work with all other JetBrains IDEs, like PHPStorm, WebStorm, etc.</li>
-    <li>Finally moved the source code to github!!!</li>
-    </ul>
-    <p><b>Version 2.9.4</b>
-    <ul>
-    <li>Fix to make plugin compatible in latest EAP 13. Thanks Muppet gate for your support and the fix.</li>
-    </ul>
-    <p><b>Version 2.9.3</b>
-    <ul>
-    <li>Added ability to change background color</li>
-    <li>Added ability to hide background lines</li>
-    <li>Added ability to change background line color</li>
-    </ul>
-    <p><b>Version 2.9.2</b>
-    <ul>
-    <li>By mistake released the v2.9.1 in DEV mode. Correct mode in this one.</li>
-    </ul>
-    <p><b>Version 2.9.1 (DONT TAKE THIS ONE)</b>
-    <ul>
-    <li>Added ability to change font color</li>
-    </ul>
-    <p><b>Version 2.9</b>
-    <ul>
-    <li>Fixed line wrap to wrap whole words (Thanks Muppet Gate)</li>
-    <li>Fixed plugin to remember the line wrap setting</li>
-    </ul>
-    <p><b>Version 2.8</b>
-    <ul>
-    <li>Added line wrap ability</li>
-    </ul>
-    <p><b>Version 2.7</b>
-    <ul>
-    <li>Added capability to search in Notes</li>
-    </ul>
-    <p><b>Version 2.6</b>
-    <ul>
-    <li>Compiled with JDK 5</li>
-    <li>New note's title is now set to current date and time</li>
-    <li>New ability to change the font and font size</li>
-    <li>New ability to place toolbar at top or bottom position</li>
-    <li>Added options dialog to manage various settings</li>
-    </ul>
-    <p><b>Version 2.5.1</b>
-    <ul>
-    <li>Fixed a bug with focusing of Note in multiple IDEA instances</li>
-    </ul>
-    <p><b>Version 2.5</b>
-    <ul>
-    <li>Note is no more locked when opened in multiple IDEA instances. Just a warning is shown.</li>
-    <li>Note is kept in sync in real time when opened in multiple IDEA instances.</li>
-    <li>All opened IDEA instances are now kept in sync when a Note is Added, Deleted or Renamed.</li>
-    </ul>
-    <p><b>Version 2.4</b>
-    <ul>
-    <li>Bug fix for Line number alignment (thanks WarnerJan)</li>
-    <li>Added popup menu to editor</li>
-    </ul>
-    <b>Version 2.3</b>
-    <br>The data is now saved in a file under user's home directory under folder ".ideaquicknote"
-    and if for some reason the saving of data fails then data is saved in the plugin's internal storage.
-    QuickNotes is now also compatible with multiple IDEA instances. Please save your existing notes before
-    upgrading to this version (just in case).
-    <ul>
-    <li>Data is now saved in user's home directory</li>
-    <li>Shows line numbers with an ability to hide it</li>
-    <li>Compatible with multiple IDEA instances</li>
-    <li>Minor UI tweaks</li>
-    </ul>
-    <p><b>Version 2.2</b>
-    <br>This version includes some nice UI tweaks
-    <ul>
-    <li>Added ability to see list of all notes and select any one of them</li>
-    <li>Changed text background as a notepad</li>
-    </ul>
-    <p><b>Version 2.1</b>
-    <br>This version is a minor update to allow saving the notes to a file
-    <ul>
-    <li>New ability to save notes to a file</li>
-    </ul>
-    NOTE: If you are upgradig from v1.0, then please save your existing note first.
-    <br>(thanks WarnerJan for pointing this out)
-    <br>
-    <p><b>Version 2.0</b>
-    <br>This version is a major update to previous version with many new functionalities
-    <ul>
-    <li>New ability to add multiple notes</li>
-    <li>New ability to delete a note</li>
-    <li>New ability to rename the title of a note</li>
-    <li>New ability to navigate multiple notes</li>
-    <li>Now also shows the created date of a note</li>
-    <li>Changed background color of notes to light yellow</li>
+    <li>Added ability to choose folder location to save file</li>
+    <li>New flat theme icons</li>
+    <li>Now using IntelliJ IDEA Color Chooser</li>
+    <li>Now remembers last caret position</li>
+    <li>Added more font sizes</li>
+    <li>UI modifications and Code cleanup</li>
+    <li>Removed usage of JDOMExternalizable</li>
     </ul>
     ]]>
-  </change-notes>
+    </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="7000"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="7000"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <depends>com.intellij.modules.lang</depends>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.lang</depends>
 
-  <application-components>
-    <component>
-      <implementation-class>com.jsrana.plugins.quicknotes.QuickNotes</implementation-class>
-    </component>
-  </application-components>
+    <application-components>
+        <component>
+            <implementation-class>com.jsrana.plugins.quicknotes.QuickNotes</implementation-class>
+        </component>
+    </application-components>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
 
-  <actions>
-    <!--
+    <actions>
+        <!--
         <action id="AddToQuickNotes" class="com.jsrana.plugins.quicknotes.action.AddToQuickNotes" text="Add to New Note" description="Adds selected text to a New Note">
           <add-to-group group-id="EditorPopupMenu" anchor="last"/>
           <keyboard-shortcut keymap="$default" first-keystroke="ctrl Q"/>
@@ -171,6 +75,6 @@
           <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Q"/>
         </action>
     -->
-  </actions>
+    </actions>
 
 </idea-plugin>

@@ -32,22 +32,6 @@ public class Utils {
     public final static String tif = "tif";
     public final static String png = "png";
 
-    public final static ImageIcon ICON_NOTE = createImageIcon("quicknotes32.png");
-    public final static ImageIcon ICON_LIST = createImageIcon("list.png");
-    public final static ImageIcon ICON_LIST16 = createImageIcon("list_16.png");
-    public final static ImageIcon ICON_LIST16_SELECTED = createImageIcon("list_16_selected.png");
-    public final static ImageIcon ICON_FORWARD = createImageIcon("forward.png");
-    public final static ImageIcon ICON_BACK = createImageIcon("back.png");
-    public final static ImageIcon ICON_CUT = createImageIcon("editcut.png");
-    public final static ImageIcon ICON_COPY = createImageIcon("editcopy.png");
-    public final static ImageIcon ICON_PASTE = createImageIcon("editpaste.png");
-    public final static ImageIcon ICON_DELETE = createImageIcon("editdelete.png");
-    public final static ImageIcon ICON_WARNING = createImageIcon("warning.png");
-    public final static ImageIcon ICON_EXEC = createImageIcon("exec.png");
-    public final static ImageIcon ICON_ON = createImageIcon("on.png");
-    public final static ImageIcon ICON_OFF = createImageIcon("off.png");
-    public final static ImageIcon ICON_SEARCH = createImageIcon("search.png");
-
     private static final String[] browsers = {"google-chrome", "firefox", "opera",
             "konqueror", "epiphany", "seamonkey", "galeon", "kazehakase", "mozilla"};
     private static final String errMsg = "Error attempting to launch web browser";
@@ -64,19 +48,6 @@ public class Utils {
             ext = s.substring(i + 1).toLowerCase();
         }
         return ext;
-    }
-
-    /**
-     * Returns an ImageIcon, or null if the path was invalid.
-     */
-    public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = Utils.class.getClassLoader().getResource("resources/" + path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
     }
 
     /**

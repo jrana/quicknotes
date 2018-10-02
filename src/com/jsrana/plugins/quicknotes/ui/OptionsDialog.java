@@ -1,9 +1,17 @@
 package com.jsrana.plugins.quicknotes.ui;
 
-import com.intellij.openapi.util.IconLoader;
+import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileWrapper;
+import com.intellij.ui.ColorChooser;
 import com.intellij.ui.JBColor;
+import com.intellij.util.Consumer;
+import com.jsrana.plugins.quicknotes.QuickNotes;
 import com.jsrana.plugins.quicknotes.manager.QuickNotesManager;
 import com.jsrana.plugins.quicknotes.util.Utils;
+import org.jdom.Element;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +22,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+
+import static com.jsrana.plugins.quicknotes.QuickNotes.PROPERTY_FILELOCATION;
 
 public class OptionsDialog
         extends JDialog {
@@ -21,7 +32,6 @@ public class OptionsDialog
     private JButton buttonOK;
     private JComboBox<String> comboBoxFont;
     private JComboBox<String> comboBoxFontSize;
-    private JComboBox<String> comboBoxLocation;
     private JButton buttonComments;
     private JButton buttonLicense;
     private JLabel labelWebsite;
@@ -43,16 +53,23 @@ public class OptionsDialog
     private JCheckBox checkBoxShowBackgroundLines;
     private JCheckBox checkBoxShowLineNumbers;
     private JCheckBox checkBoxWordWrap;
+    private JLabel logoLabel;
+    private JLabel fileLocationLabel;
+    private JButton buttonFileLocation;
+    private JTabbedPane tabbedPane;
+    private Element element;
 
-    OptionsDialog() {
+    OptionsDialog(Element element) {
         super();
+        this.element = element;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
         setTitle("Quick Notes Options");
+        logoLabel.setIcon(QuickNotesIcon.QUICKNOTES_48);
 
         buttonOK.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        buttonOK.setIcon(IconLoader.getIcon("/resources/flat/close.png"));
+        buttonOK.setIcon(QuickNotesIcon.CLOSE);
         buttonOK.setBackground(JBColor.background());
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -61,16 +78,16 @@ public class OptionsDialog
         });
 
         buttonComments.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        buttonComments.setIcon(IconLoader.getIcon("/resources/flat/comment.png"));
+        buttonComments.setIcon(QuickNotesIcon.COMMENT);
         buttonComments.setBackground(JBColor.background());
         buttonComments.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Utils.openURL("http://plugins.intellij.net/plugin/?id=4456");
+                Utils.openURL("https://plugins.jetbrains.com/plugin/4456-quick-notes");
             }
         });
 
         buttonIssue.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        buttonIssue.setIcon(IconLoader.getIcon("/resources/flat/alert.png"));
+        buttonIssue.setIcon(QuickNotesIcon.ALERT);
         buttonIssue.setBackground(JBColor.background());
         buttonIssue.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -79,7 +96,7 @@ public class OptionsDialog
         });
 
         buttonLicense.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        buttonLicense.setIcon(IconLoader.getIcon("/resources/flat/license.png"));
+        buttonLicense.setIcon(QuickNotesIcon.LICENSE);
         buttonLicense.setBackground(JBColor.background());
         buttonLicense.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         buttonLicense.addActionListener(new AbstractAction() {
@@ -113,7 +130,7 @@ public class OptionsDialog
         }
         comboBoxFont.setSelectedItem(currentFontName);
 
-        String[] fontSizes = {"8", "10", "11", "12", "14", "16", "18", "20", "24"};
+        String[] fontSizes = {"8", "10", "11", "12", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "52", "56", "64", "72", "92"};
         for (String fontSize : fontSizes) {
             comboBoxFontSize.addItem(fontSize);
         }
@@ -130,16 +147,6 @@ public class OptionsDialog
         comboBoxFontSize.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 manager.setNotesFont(new Font(String.valueOf(comboBoxFont.getSelectedItem()), Font.PLAIN, Integer.parseInt(String.valueOf(comboBoxFontSize.getSelectedItem()))));
-            }
-        });
-
-        comboBoxLocation.setBackground(JBColor.background());
-        comboBoxLocation.addItem("Top");
-        comboBoxLocation.addItem("Bottom");
-        comboBoxLocation.setSelectedItem(manager.getToolbarLocation() == QuickNotesManager.TOOLBARLOCATION_BOTTOM ? "Bottom" : "Top");
-        comboBoxLocation.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                manager.setToolBarLocation("Top".equals(comboBoxLocation.getSelectedItem()) ? QuickNotesManager.TOOLBARLOCATION_TOP : QuickNotesManager.TOOLBARLOCATION_BOTTOM);
             }
         });
 
@@ -190,7 +197,7 @@ public class OptionsDialog
         chooseFontColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myFontColorRadio.setSelected(true);
-                Color newColor = JColorChooser.showDialog(
+                Color newColor = ColorChooser.chooseColor(
                         OptionsDialog.this,
                         "Choose Font Color",
                         manager.getFontColor());
@@ -209,7 +216,7 @@ public class OptionsDialog
         chooseBackgroundColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myBackgroundColorRadio.setSelected(true);
-                Color newColor = JColorChooser.showDialog(
+                Color newColor = ColorChooser.chooseColor(
                         OptionsDialog.this,
                         "Choose Background Color",
                         manager.getBackgroundColor());
@@ -248,7 +255,7 @@ public class OptionsDialog
         chooseLineColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myLineColorRadio.setSelected(true);
-                Color newColor = JColorChooser.showDialog(
+                Color newColor = ColorChooser.chooseColor(
                         OptionsDialog.this,
                         "Choose Line Color",
                         manager.getBackgroundLineColor());
@@ -290,7 +297,7 @@ public class OptionsDialog
         chooseLineNumberColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myLineNumberColorRadio.setSelected(true);
-                Color newColor = JColorChooser.showDialog(
+                Color newColor = ColorChooser.chooseColor(
                         OptionsDialog.this,
                         "Choose Line Number Color",
                         manager.getLineNumberColor());
@@ -304,6 +311,60 @@ public class OptionsDialog
                 manager.setLineNumberColor(QuickNotesPanel.EDITOR_COLOR_LINENUMBER, true);
             }
         });
+
+        // file location
+        fileLocationLabel.setText(QuickNotesManager.getFolderPath());
+        buttonFileLocation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor( false, true, false, false, false, false);
+                fileChooserDescriptor.setTitle("Choose Plugin File Location");
+                String fileLocationPath = QuickNotesManager.getFolderPath();
+
+                VirtualFile virtualFile = FileChooser.chooseFile(fileChooserDescriptor, null, new VirtualFileWrapper( new File( fileLocationPath) ).getVirtualFile() );
+                if ( virtualFile != null ) {
+                    File newFolder = new File( virtualFile.getPath() );
+                    if (!newFolder.getAbsolutePath().equals(fileLocationPath)) {
+                        boolean persist = true;
+                        if (!newFolder.exists()) {
+                            if (!newFolder.mkdir()) {
+                                JOptionPane.showMessageDialog(null, "Unable to make folder. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                                persist = false;
+                            }
+                        }
+                        if (persist) {
+                            moveQuickNotesFile(manager, newFolder);
+                        }
+                    }
+                }
+/*
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                fileChooser.setCurrentDirectory(new File(fileLocationPath));
+                int returnVal = fileChooser.showOpenDialog(null);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File newFolder = fileChooser.getSelectedFile();
+                    if (!newFolder.getAbsolutePath().equals(fileLocationPath)) {
+                        boolean persist = true;
+                        if (!newFolder.exists()) {
+                            if (!newFolder.mkdir()) {
+                                JOptionPane.showMessageDialog(null, "Unable to make folder. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                                persist = false;
+                            }
+                        }
+                        if (persist) {
+                            moveQuickNotesFile(manager, newFolder);
+                        }
+                    }
+                }
+*/
+            }
+        });
+    }
+
+    private void moveQuickNotesFile(QuickNotesManager mgr, File newFolder) {
+        String folderPath = newFolder.getAbsolutePath();
+        fileLocationLabel.setText(folderPath);
+        PropertiesComponent.getInstance().setValue(PROPERTY_FILELOCATION, folderPath);
     }
 
     private void onOK() {

@@ -15,17 +15,12 @@
  */
 package com.jsrana.plugins.quicknotes.ui;
 
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 /**
  *
@@ -43,7 +38,7 @@ public class LicenseDialog
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        buttonOK.setIcon(IconLoader.getIcon("/resources/flat/check.png"));
+        buttonOK.setIcon(QuickNotesIcon.CHECK);
         buttonOK.setBackground(JBColor.background());
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

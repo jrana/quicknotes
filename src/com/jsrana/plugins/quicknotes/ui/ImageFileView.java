@@ -23,10 +23,10 @@ import java.io.File;
 
 public class ImageFileView
         extends FileView {
-    ImageIcon jpgIcon = Utils.createImageIcon( "image.png" );
-    ImageIcon gifIcon = Utils.createImageIcon( "image.png" );
-    ImageIcon tiffIcon = Utils.createImageIcon( "image.png" );
-    ImageIcon pngIcon = Utils.createImageIcon( "image.png" );
+    private Icon jpgIcon = QuickNotesIcon.IMAGE;
+    private Icon gifIcon = QuickNotesIcon.IMAGE;
+    private Icon tiffIcon = QuickNotesIcon.IMAGE;
+    private Icon pngIcon = QuickNotesIcon.IMAGE;
 
     public String getName( File f ) {
         return null; //let the L&F FileView figure this out
@@ -45,19 +45,21 @@ public class ImageFileView
         String type = null;
 
         if ( extension != null ) {
-            if ( extension.equals( Utils.jpeg ) ||
-                 extension.equals( Utils.jpg ) ) {
-                type = "JPEG Image";
-            }
-            else if ( extension.equals( Utils.gif ) ) {
-                type = "GIF Image";
-            }
-            else if ( extension.equals( Utils.tiff ) ||
-                      extension.equals( Utils.tif ) ) {
-                type = "TIFF Image";
-            }
-            else if ( extension.equals( Utils.png ) ) {
-                type = "PNG Image";
+            switch (extension) {
+                case Utils.jpeg:
+                case Utils.jpg:
+                    type = "JPEG Image";
+                    break;
+                case Utils.gif:
+                    type = "GIF Image";
+                    break;
+                case Utils.tiff:
+                case Utils.tif:
+                    type = "TIFF Image";
+                    break;
+                case Utils.png:
+                    type = "PNG Image";
+                    break;
             }
         }
         return type;
@@ -68,19 +70,21 @@ public class ImageFileView
         Icon icon = null;
 
         if ( extension != null ) {
-            if ( extension.equals( Utils.jpeg ) ||
-                 extension.equals( Utils.jpg ) ) {
-                icon = jpgIcon;
-            }
-            else if ( extension.equals( Utils.gif ) ) {
-                icon = gifIcon;
-            }
-            else if ( extension.equals( Utils.tiff ) ||
-                      extension.equals( Utils.tif ) ) {
-                icon = tiffIcon;
-            }
-            else if ( extension.equals( Utils.png ) ) {
-                icon = pngIcon;
+            switch (extension) {
+                case Utils.jpeg:
+                case Utils.jpg:
+                    icon = jpgIcon;
+                    break;
+                case Utils.gif:
+                    icon = gifIcon;
+                    break;
+                case Utils.tiff:
+                case Utils.tif:
+                    icon = tiffIcon;
+                    break;
+                case Utils.png:
+                    icon = pngIcon;
+                    break;
             }
         }
         return icon;
