@@ -212,8 +212,10 @@ public class QuickNotesPanel {
             @Override
             public void focusGained(FocusEvent e) {
                 super.focusGained(e);
-                if ( caretPosition >= selectedNote.getText().length() ) {
-                    caretPosition = selectedNote.getText().length() - 1;
+                if (caretPosition >= selectedNote.getText().length()) {
+                    caretPosition = selectedNote.getText().length();
+                } else if (caretPosition < 0) {
+                    caretPosition = 0;
                 }
                 pane.setCaretPosition(caretPosition);
             }
