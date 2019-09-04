@@ -348,6 +348,7 @@ public class QuickNotesManager {
             if (id != null) {
                 QuickNotesPanel qnp = panelMap.get(id);
                 qnp.setShowBackgroundLines(showBackgroundLines);
+                qnp.getTextArea().repaint();
             }
         }
     }
