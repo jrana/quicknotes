@@ -40,7 +40,7 @@ public class QuickNotesManager {
     private HashMap<String, QuickNotesPanel> panelMap;
     private int index = 0;
     private static QuickNotesManager instance = new QuickNotesManager();
-    public static final String VERSION = "v3.2";
+    public static final String VERSION = "v3.3";
 
     private boolean showLineNumbers = true;
     private boolean wordWrap = false;

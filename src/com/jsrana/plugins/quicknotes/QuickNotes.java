@@ -90,7 +90,7 @@ public class QuickNotes
                 Runnable task1 = new Runnable() {
                     @Override
                     public void run() {
-                        ToolWindow toolWindow = twm.registerToolWindow("Quick Notes", true, ToolWindowAnchor.RIGHT);
+                        ToolWindow toolWindow = twm.registerToolWindow("Quick Notes", false, ToolWindowAnchor.RIGHT);
                         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
                         Content content = contentFactory.createContent(quickNotesPanel.getRootComponent(), "", false);
                         toolWindow.getContentManager().addContent(content);

@@ -1,6 +1,6 @@
 <idea-plugin url="https://github.com/jrana/quicknotes">
     <name>Quick Notes</name>
-    <version>3.2</version>
+    <version>3.3</version>
     <vendor email="jsrana@gmail.com" url="https://github.com/jrana/quicknotes">Jitendra Rana</vendor>
 
     <description><![CDATA[
@@ -29,6 +29,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <p><b>Version 3.3</b>
+    <ul>
+    <li>Fixed java.lang.IllegalArgumentException: bad position: -1. Thanks vachiin (https://github.com/vachiin) for the fix .</li>
+    </ul>
     <p><b>Version 3.2</b>
     <ul>
     <li>Fixed layout issue in IDEA 2018.2.x and later</li>
