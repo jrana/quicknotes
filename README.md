@@ -10,5 +10,8 @@ of IDEA gets reflected in the other IDEA instances without any delay.
 - [ ] Ability to configure folder for saving notes, currently it defaults to user's home folder only.
 - [ ] Ability to configure size of tab to 4 spaces.
 - [ ] Ability to mark a Note as file specific, currently you can only create Global or Project specific notes.
+- [ ] Ability to write notes in Markdown format
+- [ ] Ability to paste in image files
+- [ ] Ability to change text formatting when writing text (bold, color etc)
 
 Add any feature request that you may have to the issues section
