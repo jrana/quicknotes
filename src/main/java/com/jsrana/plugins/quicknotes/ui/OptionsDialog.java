@@ -3,12 +3,10 @@ package com.jsrana.plugins.quicknotes.ui;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileWrapper;
-import com.intellij.ui.ColorChooser;
+import com.intellij.ui.ColorChooserService;
 import com.intellij.ui.JBColor;
-import com.intellij.util.Consumer;
-import com.jsrana.plugins.quicknotes.QuickNotes;
 import com.jsrana.plugins.quicknotes.manager.QuickNotesManager;
 import com.jsrana.plugins.quicknotes.util.Utils;
 import org.jdom.Element;
@@ -24,7 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
-import static com.jsrana.plugins.quicknotes.QuickNotes.PROPERTY_FILELOCATION;
+import static com.jsrana.plugins.quicknotes.manager.QuickNotesManager.PROPERTY_FILELOCATION;
 
 public class OptionsDialog
         extends JDialog {
@@ -190,17 +188,18 @@ public class OptionsDialog
         labelManual.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         labelManual.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                Utils.openURL("http://docs.google.com/fileview?id=0B6GyR43t58eXNzQ1ZmUyOTktZDc5NS00ZWRkLTlmMGMtOGQ0ZGIyZjdhM2E0&hl=en");
+                Utils.openURL("https://docs.google.com/fileview?id=0B6GyR43t58eXNzQ1ZmUyOTktZDc5NS00ZWRkLTlmMGMtOGQ0ZGIyZjdhM2E0&hl=en");
             }
         });
 
         chooseFontColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myFontColorRadio.setSelected(true);
-                Color newColor = ColorChooser.chooseColor(
+                Color newColor = ColorChooserService.getInstance().showDialog(
                         OptionsDialog.this,
                         "Choose Font Color",
-                        manager.getFontColor());
+                        manager.getFontColor(),
+                        false);
                 if (newColor != null) {
                     manager.setFontColor(newColor, false);
                 }
@@ -216,10 +215,11 @@ public class OptionsDialog
         chooseBackgroundColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myBackgroundColorRadio.setSelected(true);
-                Color newColor = ColorChooser.chooseColor(
+                Color newColor = ColorChooserService.getInstance().showDialog(
                         OptionsDialog.this,
                         "Choose Background Color",
-                        manager.getBackgroundColor());
+                        manager.getBackgroundColor(),
+                        false);
                 if (newColor != null) {
                     manager.setBackgroundColor(newColor, false);
                 }
@@ -255,10 +255,11 @@ public class OptionsDialog
         chooseLineColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myLineColorRadio.setSelected(true);
-                Color newColor = ColorChooser.chooseColor(
+                Color newColor = ColorChooserService.getInstance().showDialog(
                         OptionsDialog.this,
                         "Choose Line Color",
-                        manager.getBackgroundLineColor());
+                        manager.getBackgroundLineColor(),
+                        false);
                 if (newColor != null) {
                     manager.setBackgroundLineColor(newColor, false);
                 }
@@ -297,10 +298,11 @@ public class OptionsDialog
         chooseLineNumberColorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 myLineNumberColorRadio.setSelected(true);
-                Color newColor = ColorChooser.chooseColor(
+                Color newColor = ColorChooserService.getInstance().showDialog(
                         OptionsDialog.this,
                         "Choose Line Number Color",
-                        manager.getLineNumberColor());
+                        manager.getLineNumberColor(),
+                        false);
                 if (newColor != null) {
                     manager.setLineNumberColor(newColor, false);
                 }
@@ -321,7 +323,8 @@ public class OptionsDialog
                 fileChooserDescriptor.setTitle("Choose Plugin File Location");
                 String fileLocationPath = QuickNotesManager.getFolderPath();
 
-                VirtualFile virtualFile = FileChooser.chooseFile(fileChooserDescriptor, null, new VirtualFileWrapper( new File( fileLocationPath) ).getVirtualFile() );
+                VirtualFile toSelect = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(fileLocationPath));
+                VirtualFile virtualFile = FileChooser.chooseFile(fileChooserDescriptor, null, toSelect);
                 if ( virtualFile != null ) {
                     File newFolder = new File( virtualFile.getPath() );
                     if (!newFolder.getAbsolutePath().equals(fileLocationPath)) {

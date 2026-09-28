@@ -1,6 +1,7 @@
 <idea-plugin url="https://github.com/jrana/quicknotes">
+    <id>Quick Notes</id>
     <name>Quick Notes</name>
-    <version>3.3</version>
+    <version>4.0</version>
     <vendor email="jsrana@gmail.com" url="https://github.com/jrana/quicknotes">Jitendra Rana</vendor>
 
     <description><![CDATA[
@@ -22,13 +23,17 @@
     <li>Ability to change Font of notes</li>
     <li>Ability to search notes</li>
     </ul>
-    <br><a href='http://docs.google.com/fileview?id=0B6GyR43t58eXNzQ1ZmUyOTktZDc5NS00ZWRkLTlmMGMtOGQ0ZGIyZjdhM2E0&hl=en' target='_blank'>Click here</a> to read/download the manual for this plugin.
+    <br><a href='https://docs.google.com/fileview?id=0B6GyR43t58eXNzQ1ZmUyOTktZDc5NS00ZWRkLTlmMGMtOGQ0ZGIyZjdhM2E0&hl=en' target='_blank'>Click here</a> to read/download the manual for this plugin.
     <br><br>For any bugs or suggestions, please leave a comment on the plugin page at
     <br><a href='https://plugins.jetbrains.com/plugin/4456-quick-notes' target='_blank'>https://plugins.jetbrains.com/plugin/4456-quick-notes</a>
     <br><br>Quick Notes is an open source project hosted at <a href='https://github.com/jrana/quicknotes'>github</a> and you are always welcome to join this project and contribute.
     ]]></description>
 
     <change-notes><![CDATA[
+    <p><b>Version 3.4</b>
+    <ul>
+    <li>Updated the plugin to current IntelliJ Platform build and API standards.</li>
+    </ul>
     <p><b>Version 3.3</b>
     <ul>
     <li>Fixed java.lang.IllegalArgumentException: bad position: -1. Thanks vachiin (https://github.com/vachiin) for the fix .</li>
@@ -50,22 +55,21 @@
     ]]>
     </change-notes>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="7000"/>
+    <idea-version since-build="242"/>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
 
-    <application-components>
-        <component>
-            <implementation-class>com.jsrana.plugins.quicknotes.QuickNotes</implementation-class>
-        </component>
-    </application-components>
-
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <toolWindow id="Quick Notes"
+                    anchor="right"
+                    icon="/icons/quicknotes.png"
+                    factoryClass="com.jsrana.plugins.quicknotes.QuickNotesToolWindowFactory"/>
     </extensions>
+
+    <projectListeners>
+        <listener class="com.jsrana.plugins.quicknotes.QuickNotesProjectListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </projectListeners>
 
     <actions>
         <!--
