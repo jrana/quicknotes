@@ -23,4 +23,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build and verify
-        run: ./gradlew build verifyPlugin --stacktrace
+        run: bash ./gradlew build verifyPlugin --stacktrace
