@@ -15,36 +15,49 @@
  */
 package com.jsrana.plugins.quicknotes.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataConstants;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.jsrana.plugins.quicknotes.QuickNotes;
 import com.jsrana.plugins.quicknotes.manager.QuickNotesManager;
 import com.jsrana.plugins.quicknotes.ui.QuickNotesPanel;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jitendra Rana
  */
 public class AddToQuickNotes
         extends AnAction {
-    public void actionPerformed( AnActionEvent e ) {
-        Editor editor = ( Editor ) e.getDataContext().getData( "editor" );
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
+
+    @Override
+    public void actionPerformed(@NotNull AnActionEvent e) {
+        Editor editor = e.getData(CommonDataKeys.EDITOR);
+        if (editor == null) {
+            return;
+        }
         SelectionModel selectionModel = editor.getSelectionModel();
-        if ( selectionModel != null ) {
-            String selectedText = selectionModel.getSelectedText();
-            if ( selectedText != null && selectedText.trim().length() > 0 ) {
-                Project project = ( Project ) e.getDataContext().getData( DataConstants.PROJECT );
-                String panelid = ( String ) project.getUserData( QuickNotes.KEY_PANELID );
-                QuickNotesPanel quickNotesPanel = QuickNotesManager.getInstance().getQuickNotesPanel( panelid );
-                if ( quickNotesPanel != null ) {
-                    FileDocumentManager manager = FileDocumentManager.getInstance();
-                    VirtualFile virtualFile = manager.getFile( editor.getDocument() );
-                    quickNotesPanel.addNewNote( "[File: " + virtualFile.getPath() + "]\n" + selectedText );
+        String selectedText = selectionModel.getSelectedText();
+        if (selectedText != null && !selectedText.trim().isEmpty()) {
+            Project project = e.getData(CommonDataKeys.PROJECT);
+            if (project == null) {
+                return;
+            }
+            String panelid = project.getUserData(QuickNotesManager.KEY_PANELID);
+            QuickNotesPanel quickNotesPanel = QuickNotesManager.getInstance().getQuickNotesPanel(panelid);
+            if (quickNotesPanel != null) {
+                FileDocumentManager manager = FileDocumentManager.getInstance();
+                VirtualFile virtualFile = manager.getFile(editor.getDocument());
+                if (virtualFile != null) {
+                    quickNotesPanel.addNewNote("[File: " + virtualFile.getPath() + "]\n" + selectedText);
                 }
             }
         }

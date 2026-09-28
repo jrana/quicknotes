@@ -16,9 +16,11 @@
 package com.jsrana.plugins.quicknotes.ui;
 
 import com.intellij.openapi.actionSystem.*;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import com.jsrana.plugins.quicknotes.manager.QuickNotesManager;
 import com.jsrana.plugins.quicknotes.util.StringUtil;
 import org.jdom.Element;
@@ -87,66 +89,38 @@ public class QuickNotesPanel {
         final DefaultActionGroup dag = new DefaultActionGroup();
 
         dag.addSeparator();
-        dag.add(new AnAction("Previous Note", "Previous Note", QuickNotesIcon.ARROW_LEFT) {
-            @Override
-            public void actionPerformed(AnActionEvent anActionEvent) {
-                goBack();
-            }
-        });
-        dag.add(new AnAction("Next Note", "Next Note", QuickNotesIcon.ARROW_RIGHT) {
-            @Override
-            public void actionPerformed(AnActionEvent anActionEvent) {
-                goNext();
-            }
-        });
+        dag.add(toolbarAction("Previous Note", QuickNotesIcon.ARROW_LEFT, this::goBack));
+        dag.add(toolbarAction("Next Note", QuickNotesIcon.ARROW_RIGHT, this::goNext));
         dag.addSeparator();
-        dag.add(new AnAction("Add Note", "Add Note", QuickNotesIcon.ADD) {
-            @Override
-            public void actionPerformed(AnActionEvent anActionEvent) {
-                addNewNote("Enter your notes here...");
-            }
-        });
-        dag.add(new AnAction("Delete Note", "Delete Note", QuickNotesIcon.TRASH) {
-            @Override
-            public void actionPerformed(AnActionEvent anActionEvent) {
-                deleteNote();
-            }
-        });
+        dag.add(toolbarAction("Add Note", QuickNotesIcon.ADD, () -> addNewNote("Enter your notes here...")));
+        dag.add(toolbarAction("Delete Note", QuickNotesIcon.TRASH, this::deleteNote));
         dag.addSeparator();
-        dag.add(new AnAction("Search", "Search", QuickNotesIcon.SEARCH) {
-            @Override
-            public void actionPerformed(AnActionEvent anActionEvent) {
-                if (searchPanel.isVisible()) {
-                    hideSearch();
-                } else {
-                    showSearch();
-                }
+        dag.add(toolbarAction("Search", QuickNotesIcon.SEARCH, () -> {
+            if (searchPanel.isVisible()) {
+                hideSearch();
+            } else {
+                showSearch();
             }
-        });
-        dag.add(new AnAction("Show All Notes", "Show All Notes", QuickNotesIcon.LIST) {
-            @Override
-            public void actionPerformed(AnActionEvent anActionEvent) {
-                if (listAllNodes) {
-                    listAllNodes = false;
-                    selectNote(getSelectedNoteIndex(), true);
-                } else {
-                    listAllNotes();
-                }
+        }));
+        dag.add(toolbarAction("Show All Notes", QuickNotesIcon.LIST, () -> {
+            if (listAllNodes) {
+                listAllNodes = false;
+                selectNote(getSelectedNoteIndex(), true);
+            } else {
+                listAllNotes();
             }
-        });
-        dag.add(new AnAction("Settings", "Settings", QuickNotesIcon.SLIDERS) {
-            @Override
-            public void actionPerformed(AnActionEvent anActionEvent) {
-                OptionsDialog dialog = new OptionsDialog(element);
-                dialog.setLocationRelativeTo(null);
-                dialog.pack();
-                dialog.setVisible(true);
-            }
-        });
+        }));
+        dag.add(toolbarAction("Settings", QuickNotesIcon.SLIDERS, () -> {
+            OptionsDialog dialog = new OptionsDialog(element);
+            dialog.setLocationRelativeTo(null);
+            dialog.pack();
+            dialog.setVisible(true);
+        }));
 
         final ActionToolbar actionToolbar = actionManager.createActionToolbar("QuickNotes", dag, true);
-        final JComponent actionToolbarComponent = actionToolbar.getComponent();
+        actionToolbar.setTargetComponent(panel1);
         actionToolbar.setReservePlaceAutoPopupIcon(false);
+        final JComponent actionToolbarComponent = actionToolbar.getComponent();
         actionPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
         actionPanel.add(actionToolbarComponent);
 
@@ -204,7 +178,7 @@ public class QuickNotesPanel {
         quickNotesManager.setWordWrap("Y".equals(element.getAttributeValue("wordwrap")));
         quickNotesManager.addQuickNotesPanel(this);
         selectNote(selectedIndex, true);
-        pane.setFont(quickNotesManager.getNotesFont());
+        setNotesFont(quickNotesManager.getNotesFont());
         pane.setLineWrap(quickNotesManager.isWordWrap());
         pane.setWrapStyleWord(quickNotesManager.isWordWrap());
         pane.setForeground(quickNotesManager.getFontColor());
@@ -238,7 +212,7 @@ public class QuickNotesPanel {
             }
 
             public void ancestorRemoved(AncestorEvent event) {
-                QuickNotesManager.saveSettings(element);
+                quickNotesManager.saveSettings(element);
             }
 
             public void ancestorMoved(AncestorEvent event) {
@@ -355,7 +329,7 @@ public class QuickNotesPanel {
 /*
         buttonList2.setSelected(false);
 */
-        pane.setFont(quickNotesManager.getNotesFont());
+        setNotesFont(quickNotesManager.getNotesFont());
         quickNotesManager.setNoteEditWarning();
     }
 
@@ -412,6 +386,7 @@ public class QuickNotesPanel {
                 }
             });
         }
+        configureSearchPane();
         if (searchPane.getParent() == null) {
             noteScroller.getViewport().add(searchPane);
         }
@@ -435,11 +410,11 @@ public class QuickNotesPanel {
             txt = txt.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
 
             sb.append("<div style='padding:3px;border-bottom:1px solid ").append(foregroundColor).append(";'>");
-            sb.append("<div style='font:bold 10px sans-serif'>");
+            sb.append("<div style='font-weight:bold'>");
             sb.append((i + 1)).append(".&nbsp;");
             sb.append("<a href='http://").append(i).append("'>");
             sb.append(e.getAttributeValue("title")).append("</a></div>");
-            sb.append("<table><tr><td style='font:normal 9px verdana;color:gray;padding-left:10px'>").append(txt).append("</td></tr></table>");
+            sb.append("<table><tr><td style='color:gray;padding-left:10px'>").append(txt).append("</td></tr></table>");
             sb.append("</div>");
             even = !even;
         }
@@ -516,6 +491,7 @@ public class QuickNotesPanel {
                         }
                     });
                 }
+                configureSearchPane();
                 if (searchPane.getParent() == null) {
                     noteScroller.getViewport().add(searchPane);
                 }
@@ -561,16 +537,16 @@ public class QuickNotesPanel {
                         count++;
                         even = !even;
                         sb.append("<div style='padding:3px;border-bottom:1px solid ").append(foregroundColor).append(";'>");
-                        sb.append("<div style='font:bold 10px sans-serif'>");
+                        sb.append("<div style='font-weight:bold'>");
                         sb.append("<a href='http://").append(i).append("' style='text-decoration:none;font-color:").append(foregroundColor).append(";'>").append(title).append("</a></div>");
-                        sb.append("<table><tr><td style='font:normal 9px verdana;color:gray;padding-left:10px'>").append(txt).append("</td></tr></table>");
+                        sb.append("<table><tr><td style='color:gray;padding-left:10px'>").append(txt).append("</td></tr></table>");
                         sb.append("</div>");
                     }
                 }
                 sb.append("</body></html>");
-                searchPane.setText(count > 0 ? sb.toString() : "<div style='font:normal 10px sans-serif;padding:5px'>No matching notes found...</div>");
+                searchPane.setText(count > 0 ? sb.toString() : "<div style='padding:5px'>No matching notes found...</div>");
             } else {
-                searchPane.setText("<div style='font:normal 10px sans-serif;padding:5px'>Please enter a text to search...</div>");
+                searchPane.setText("<div style='padding:5px'>Please enter a text to search...</div>");
             }
         }
     }
@@ -793,7 +769,16 @@ public class QuickNotesPanel {
     }
 
     public void setNotesFont(Font notesFont) {
-        pane.setFont(notesFont);
+        Font displayFont = UIUtil.getFontWithFallback(notesFont);
+        pane.setFont(displayFont);
+        if (searchPane != null) {
+            searchPane.setFont(displayFont);
+        }
+    }
+
+    private void configureSearchPane() {
+        searchPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+        searchPane.setFont(UIUtil.getFontWithFallback(quickNotesManager.getNotesFont()));
     }
 
     public JTextArea getTextArea() {
@@ -813,14 +798,33 @@ public class QuickNotesPanel {
         this.showBackgroundLines = showBackgroundLines;
     }
 
+    private AnAction toolbarAction(String text, Icon icon, Runnable action) {
+        return new AnAction(() -> text, () -> text, () -> icon) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent event) {
+                action.run();
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.BGT;
+            }
+        };
+    }
+
     private final class AddNoteAction extends AnAction {
         private AddNoteAction() {
-            super("Quick Notes", "Quick Notes Description", QuickNotesIcon.ADD);
+            super(() -> "Quick Notes", () -> "Quick Notes Description", () -> QuickNotesIcon.ADD);
         }
 
         @Override
-        public void actionPerformed(final AnActionEvent e) {
+        public void actionPerformed(@NotNull AnActionEvent e) {
             addNewNote("Enter your notes here...");
+        }
+
+        @Override
+        public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.BGT;
         }
     }
 
